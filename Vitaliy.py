@@ -1,31 +1,62 @@
+import os
+
+os.system('cls')
+
 class Robot:
-    def __init__(self, name, inventory_number, company_name):
-        self.name = name
-        self.inventory_number = inventory_number
-        self.functions = []
-        self.company_name = company_name
+    __instance = None
 
-    def add_function(self, function):
-        self.functions.append(function)
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+            cls.__instance.name = "V"
+            cls.__instance.inventory_number = "AA001221-56"
+            cls.__instance.operating_company = None
+            cls.__instance.functions = []
+        return cls.__instance
 
-    def list_functions(self):
-        return self.functions
-
-    def change_name(self, new_name):
+    def set_name(self, new_name):
         self.name = new_name
 
-robot = Robot("V", "AA001221-56", "Primary_school")
-robot.add_function("build_house")
-robot.add_function("build_shed")
+    def set_operating_company(self, new_operating_company):
+        self.operating_company = new_operating_company
 
-robot.change_name("VITA")
-robot.company_name = "OOO Koshmarik"
-robot.add_function("add_floor")
-robot.add_function("remove_top_floor")
+    def get_info(self):
+        return f"Name: {self.name}, Inventory Number: {self.inventory_number}, Operating Company: {self.operating_company}, Functions: {self.functions}"
 
-robot.change_name("Vitaliy")
+class RobotDecorator:
+    def __init__(self, robot):
+        self.robot = robot
 
-print(robot.name) # prints Vitaliy
-print(robot.inventory_number) # prints AA001221-56
-print(robot.company_name) # prints OOO Koshmarik
-print(robot.list_functions()) # prints
+    def build_house(self):
+        self.robot.functions.append("build_house")
+
+    def build_shed(self):
+        self.robot.functions.append("build_shed")
+
+    def add_floor(self):
+        self.robot.functions.append("add_floor")
+
+    def remove_floor(self):
+        self.robot.functions.append("remove_floor")
+
+if __name__ == "__main__":
+    robot = Robot()
+    robot_decorator = RobotDecorator(robot)
+    robot_decorator.build_house()
+    robot_decorator.build_shed()
+    print(robot.get_info())
+    # Name: V, Inventory Number: AA001221-56, Operating Company: None, Functions: ['build_house', 'build_shed']
+
+    robot.set_name("VITA")
+    robot.set_operating_company("OOO Koshmarik")
+    robot_decorator.add_floor()
+    print(robot.get_info())
+    # Name: VITA, Inventory Number: AA001221-56, Operating Company: OOO Koshmarik, Functions: ['build_house', 'build_shed', 'add_floor']
+
+    robot_decorator.remove_floor()
+    print(robot.get_info())
+    # Name: VITA, Inventory Number: AA001221-56, Operating Company: OOO Koshmarik, Functions: ['build_house', 'build_shed', 'add_floor', 'remove_floor']
+
+    robot2 = Robot()
+    print(robot2.get_info())
+    # Name: VITA, Inventory Number: AA001221-56, Operating Company: OOO Koshmarik, Functions: ['build_house', 'build_shed', 'add_floor', 'remove_floor']
